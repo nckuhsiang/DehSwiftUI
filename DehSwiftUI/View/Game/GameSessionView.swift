@@ -11,7 +11,8 @@ import Combine
 import Alamofire
 struct SessionView: View {
     var group:Group
-    @State var sessionList : [SessionModel] = []
+    @StateObject var gameVM:GameViewModel
+//    @State var sessionList : [SessionModel] = []
     @State private var showingSheet = false
     @State var selection: Int? = nil
     @EnvironmentObject var settingStorage:SettingStorage
@@ -20,7 +21,7 @@ struct SessionView: View {
     var body: some View {
         ZStack{
             List{
-                ForEach(sessionList,id: \.self){
+                ForEach(gameVM.sessionList,id: \.self){
                     session in
                     Button(session.name) {
                                 showingSheet = true
@@ -55,50 +56,47 @@ struct SessionView: View {
                 EmptyView()
             }
             NavigationLink(
-                destination: GameMap(group: self.group, session: selectedSession ?? testSession),
+                destination: GameMap(gameVM: gameVM, group: self.group, session: selectedSession ?? testSession),
                 tag:2, selection: $selection){
                 EmptyView()
             }
         }
 
-        
-//        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
             .onAppear(){
-                if(sessionList.isEmpty){
-                    getSessions()
-                }
+                gameVM.getSessions(userID: settingStorage.userID, groupID: group.id)
+                
             }
     }
 }
 
 extension SessionView{
-    func getSessions(){
-        let url = getRoomList
-        let parameters:[String:String] = [
-            "user_id": "\(settingStorage.userID)",
-            "coi_name": coi,
-            "coi":coi,
-            "language": "中文",
-            "group_id":"\(self.group.id)",
-            
-            
-        ]
-        let publisher:DataResponsePublisher<[SessionModel]> = NetworkConnector().getDataPublisherDecodable(url: url, para: parameters)
-        self.cancellable = publisher
-            .sink(receiveValue: {(values) in
-//                print(values.data?.JsonPrint())
-                print(values.debugDescription)
-                if let value = values.value{
-                    self.sessionList = value
-                }
-                
-            })
-    }
+//    func getSessions(){
+//        let url = getRoomList
+//        let parameters:[String:String] = [
+//            "user_id": "\(settingStorage.userID)",
+//            "coi_name": coi,
+//            "coi":coi,
+//            "language": "中文",
+//            "group_id":"\(self.group.id)",
+//
+//
+//        ]
+//        let publisher:DataResponsePublisher<[SessionModel]> = NetworkConnector().getDataPublisherDecodable(url: url, para: parameters)
+//        self.cancellable = publisher
+//            .sink(receiveValue: {(values) in
+////                print(values.data?.JsonPrint())
+//                print(values.debugDescription)
+//                if let value = values.value{
+//                    self.sessionList = value
+//                }
+//
+//            })
+//    }
 }
 
 struct Session_Previews: PreviewProvider {
     static var previews: some View {
-        SessionView(group: Group(id: -1, name: "testGroup", leaderId: -1, info: ""))
+        SessionView(group: Group(id: -1, name: "testGroup", leaderId: -1, info: ""),gameVM: GameViewModel())
             .environmentObject(SettingStorage())
     }
 }

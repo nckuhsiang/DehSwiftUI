@@ -59,3 +59,19 @@ class GameHistoryModel:Decodable,Hashable,Identifiable{
         return lhs.id == rhs.id
     }
 }
+
+class gameListtuple : Identifiable, Hashable{
+    var id = UUID()
+    var sectionName:String = ""
+    var groupList:[Group] = []
+    init(_ sectionName:String, _ groupList:[Group]) {
+        self.sectionName = sectionName
+        self.groupList = groupList
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    static func == (lhs: gameListtuple, rhs: gameListtuple) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
