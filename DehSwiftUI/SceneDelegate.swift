@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if #available(iOS 13.0, *) {
                 window.overrideUserInterfaceStyle = .light
             }
-            window.rootViewController = UIHostingController(rootView: ContentView().environmentObject(SettingStorage()))
+            window.rootViewController = UIHostingController(rootView: BeginView().environmentObject(SettingStorage()))
             self.window = window
             window.makeKeyAndVisible()
         }

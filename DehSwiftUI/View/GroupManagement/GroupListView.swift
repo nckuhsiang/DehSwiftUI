@@ -111,7 +111,6 @@ extension GroupListView{
         self.groupListCancellable = publisher
             .sink(receiveValue: {(values) in
                 groupsModel.groups = values.value?.results ?? []
-                
             })
     }
     func getGroupMessage() {

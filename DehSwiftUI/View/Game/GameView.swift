@@ -33,13 +33,11 @@ struct GameView: View {
                 }
                 .listRowBackground(Color.init(UIColor(rgba: lightGreen)))
             }
-            
         }
             .onAppear(perform: {
                 if(gameList.isEmpty){
                     getGameList()
                 }
-                
             })
     }
 }

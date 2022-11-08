@@ -35,6 +35,8 @@ let coi = "deh"
 let app = "deh"
 #endif
 
+
+
 var language = ""
 struct ContentView: View {
     init(){
@@ -90,6 +92,7 @@ struct ContentView: View {
     //若使用classModel的值則必須使用observation pattern
     //https://stackoverflow.com/questions/60744017/how-do-i-update-a-text-label-in-swiftui
     @State var selection: Int? = nil
+    
     var body: some View {
         ZStack {
             NavigationView {

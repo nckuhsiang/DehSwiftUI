@@ -6,6 +6,17 @@
 //  Copyright © 2020 mmlab. All rights reserved.
 //https://swiftwithmajid.com/2020/07/29/using-mapkit-with-swiftui/
 
+//private func initializeHERESDK() {
+//    // Set your credentials for the HERE SDK.
+//    let accessKeyID = "YOUR_ACCESS_KEY_ID"
+//    let accessKeySecret = "YOUR_ACCESS_KEY_SECRET"
+//    let options = SDKOptions(accessKeyId: accessKeyID, accessKeySecret: accessKeySecret)
+//    do {
+//        try SDKNativeEngine.makeSharedInstance(options: options)
+//    } catch let engineInstantiationError {
+//        fatalError("Failed to initialize the HERE SDK. Cause: \(engineInstantiationError)")
+//    }
+//}
 import SwiftUI
 import MapKit
 import Combine
@@ -112,7 +123,7 @@ struct DEHMap: View {
                     }
                 }
             )
-            if filterState{
+            if filterState {
                 FilterView(idsIndex: $idsIndex, typesIndex: $typesIndex, formatsIndex: $formatsIndex, myViewState: $filterState, locationManager: locationManager)
             }
         }
