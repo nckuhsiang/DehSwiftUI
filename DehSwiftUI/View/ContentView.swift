@@ -39,7 +39,8 @@ let app = "deh"
 
 var language = ""
 struct ContentView: View {
-    init(){
+    init(group:Group){
+        self.group = group
         UserDefaults.standard.register(defaults: [
             "advancedSetting" : false,
             "searchDistance" : 10.0,
@@ -83,12 +84,14 @@ struct ContentView: View {
         
     }
     //帶有State 的變數可以動態變更ＵＩ上的值
+    @State var group: Group
     @State var sheetState = false
     @State var alertState = false
     @State var textState = false
     @State private var cancellable: AnyCancellable?
     @State var searchTitle = "title"
     @EnvironmentObject var settingStorage:SettingStorage
+
     //若使用classModel的值則必須使用observation pattern
     //https://stackoverflow.com/questions/60744017/how-do-i-update-a-text-label-in-swiftui
     @State var selection: Int? = nil
@@ -97,9 +100,13 @@ struct ContentView: View {
         ZStack {
             NavigationView {
                 VStack(spacing: 0){
+//                    Text(self.group.name)
                     TabView{
                         TabViewElement(title: "My Favorite".localized, image1: "Empty", image2: "Empty",tabItemImage: "member_favorite",tabItemName: "favorite")
                         TabViewElement(title: "Searched Xois".localized, image1: "Empty", image2: "Empty",tabItemImage:"member_searched",tabItemName: "nearby")
+                        if isLite() {
+                            TabViewElement(title: "Group Interests".localized, image1: "empty", image2: "search",tabItemImage:"member_group",tabItemName:"group", group: group)
+                        }
                         if isMini() {
                             TabViewElement(title: "Group Interests".localized, image1: "member_grouplist", image2: "search",tabItemImage:"member_group",tabItemName:"group")
                             TabViewElement(title: "My Xois".localized, image1: "Empty", image2: "search",tabItemImage:"member_interests",tabItemName:"mine")
@@ -178,11 +185,18 @@ struct ContentView: View {
                 NickNameDialog(show: $textState)
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
     //this line to avoid lots of warning
     //https://stackoverflow.com/questions/65316497/swiftui-navigationview-navigationbartitle-layoutconstraints-issue/65316745
 }
 extension ContentView {
+    func isLite() -> Bool {
+        if app == "dehLite" {
+            return true
+        }
+        return false
+    }
     func isMini() -> Bool {
         if app == "deh" || app == "sdc" {
             return true
@@ -190,9 +204,9 @@ extension ContentView {
         return false
     }
 }
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .environmentObject(SettingStorage())
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//            .environmentObject(SettingStorage())
+//    }
+//}

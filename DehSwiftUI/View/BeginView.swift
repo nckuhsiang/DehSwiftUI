@@ -18,36 +18,66 @@ struct BeginView: View {
     @State var reqAlertState:Bool = false
     @State var resAlertState:Bool = false
     @State var alertText:String = ""
-    @State var selectedGroup:String = ""
+    @State var selectedGroup:Group = Group(id: 0, name: "-111", leaderId: 0, info: "")
     @State var groupList:[Group] = []
     @State private var cancellable: AnyCancellable?
     
     var body: some View {
-        VStack {
-            NavigationLink(destination: ContentView(), isActive: self.$groupSelectedOver) { EmptyView() }
-            SearchBar(text: $searchText)
-            List {
-                ForEach(self.groupList) { groupName in
-                    if(groupName.name.hasPrefix(searchText)) {
-                        Button {
-                            self.selectedGroup = groupName.name
-                            self.reqAlertState = true
-                        } label: {
-                            Text(groupName.name)
-                        }
-                        .alert(isPresented: $reqAlertState) { () -> Alert in
-                            return Alert(title: Text("Join".localized),
-                                         message: Text("Join".localized + "\(selectedGroup)?"),
-                                         primaryButton: .default(Text("Yes".localized),
-                                                                 action: {               self.resAlertState = true
-                            }),
-                                         secondaryButton: .default(Text("No".localized), action: {}))
+        NavigationView{
+            VStack {
+                NavigationLink(destination: ContentView(group:self.selectedGroup), isActive: self.$groupSelectedOver) { EmptyView() }
+                SearchBar(text: $searchText)
+                List {
+                    ForEach(self.groupList) { group in
+                        if(group.name.hasPrefix(searchText)) {
+                            Button {
+                                self.selectedGroup = group
+                                self.reqAlertState = true
+                            } label: {
+                                Text(group.name)
+                            }
+                            .alert(isPresented: $reqAlertState) { () -> Alert in
+                                return Alert(title: Text("Join".localized),
+                                             message: Text("Join".localized + "\(selectedGroup)?"),
+                                             primaryButton: .default(Text("Yes".localized),
+                                                                     action: {               self.resAlertState = true
+                                    self.groupSelectedOver = true
+                                }),
+                                             secondaryButton: .default(Text("No".localized), action: {}))
+                            }
                         }
                     }
                 }
+                .listStyle(PlainListStyle())
+                
             }
-            .listStyle(PlainListStyle())
         }
+//        VStack {
+//            NavigationLink(destination: ContentView(group:self.selectedGroup), isActive: self.$groupSelectedOver) { EmptyView() }
+//            SearchBar(text: $searchText)
+//            List {
+//                ForEach(self.groupList) { group in
+//                    if(group.name.hasPrefix(searchText)) {
+//                        Button {
+//                            self.selectedGroup = group
+//                            self.reqAlertState = true
+//                        } label: {
+//                            Text(group.name)
+//                        }
+//                        .alert(isPresented: $reqAlertState) { () -> Alert in
+//                            return Alert(title: Text("Join".localized),
+//                                         message: Text("Join".localized + "\(selectedGroup)?"),
+//                                         primaryButton: .default(Text("Yes".localized),
+//                                                                 action: {               self.resAlertState = true
+//                                self.groupSelectedOver = true
+//                            }),
+//                                         secondaryButton: .default(Text("No".localized), action: {}))
+//                        }
+//                    }
+//                }
+//            }
+//            .listStyle(PlainListStyle())
+//        }
         .onAppear { getGroupList() }
     }
 }
@@ -64,20 +94,6 @@ extension BeginView {
                 self.groupList = values.value?.results ?? []
             })
     }
-//    func getGroupList(){
-//        print(coi,"ssssssss")
-//        let url = GroupGetUserGroupListUrl
-//        let parameters:[String:String] = [
-//            "user_id": "\(settingStorage.userID)",
-//            "coi_name": coi,
-//            "language": language,
-//        ]
-//        let publisher:DataResponsePublisher<GroupLists> = NetworkConnector().getDataPublisherDecodable(url: url, para: parameters)
-//        self.groupListCancellable = publisher
-//            .sink(receiveValue: {(values) in
-//                groupsModel.groups = values.value?.results ?? []
-//            })
-//    }
 }
 
 struct GroupNameList2:Decodable{
