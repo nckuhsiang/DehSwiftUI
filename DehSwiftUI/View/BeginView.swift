@@ -19,22 +19,19 @@ struct BeginView: View {
     @State var resAlertState:Bool = false
     @State var alertText:String = ""
     @State var selectedGroup:String = ""
-    @State var groupNameList:[GroupName] = []
+    @State var groupList:[Group] = []
     @State private var cancellable: AnyCancellable?
     
     var body: some View {
         VStack {
-            if #available(iOS 15, *) {
-                NavigationLink(destination: ContentView(), isActive: self.$groupSelectedOver) { EmptyView() }
-            }
+            NavigationLink(destination: ContentView(), isActive: self.$groupSelectedOver) { EmptyView() }
             SearchBar(text: $searchText)
             List {
-                ForEach(self.groupNameList) { groupName in
+                ForEach(self.groupList) { groupName in
                     if(groupName.name.hasPrefix(searchText)) {
                         Button {
                             self.selectedGroup = groupName.name
                             self.reqAlertState = true
-                            GroupApplyMessage()
                         } label: {
                             Text(groupName.name)
                         }
@@ -51,30 +48,40 @@ struct BeginView: View {
             }
             .listStyle(PlainListStyle())
         }
-        .onAppear { getGroupNameList() }
-//        .alert(isPresented: $resAlertState) {
-//            Alert(title:Text(alertText.localized), dismissButton: .default(Text("OK".localized), action: {self.groupSelectedOver = true}))
-//        }
+        .onAppear { getGroupList() }
     }
 }
 
 extension BeginView {
-    func getGroupNameList() {
-        let url = GroupGetListUrl
+    func getGroupList() {
+        let url = GroupGetAllListUrl
         print(settingStorage.account)
-        let parameters = ["username":settingStorage.account,
-                          "coi_name":coi]
+        let parameters = ["coi_name":coi]
         let publisher:DataResponsePublisher<GroupNameList2> = NetworkConnector().getDataPublisherDecodable(url: url, para: parameters)
         self.cancellable = publisher
             .sink(receiveValue: {(values) in
                 print(values.debugDescription)
-                self.groupNameList = values.value?.result ?? []
+                self.groupList = values.value?.results ?? []
             })
     }
+//    func getGroupList(){
+//        print(coi,"ssssssss")
+//        let url = GroupGetUserGroupListUrl
+//        let parameters:[String:String] = [
+//            "user_id": "\(settingStorage.userID)",
+//            "coi_name": coi,
+//            "language": language,
+//        ]
+//        let publisher:DataResponsePublisher<GroupLists> = NetworkConnector().getDataPublisherDecodable(url: url, para: parameters)
+//        self.groupListCancellable = publisher
+//            .sink(receiveValue: {(values) in
+//                groupsModel.groups = values.value?.results ?? []
+//            })
+//    }
 }
 
 struct GroupNameList2:Decodable{
-    let result:[GroupName]
+    let results:[Group]
 }
 
 struct BeginView_Previews: PreviewProvider {
