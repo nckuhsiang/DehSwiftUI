@@ -29,6 +29,7 @@ struct DEHMap: View {
         center: CLLocationCoordinate2D(latitude: 22.997, longitude: 120.221),
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )
+    @State var group:Group = Group(id: 0, name: "-111", leaderId: 0, info: "")
     @State var poiIndex:Int? = nil
     @State var idsIndex:Int = 0
     @State var typesIndex:Int = 0
@@ -81,10 +82,10 @@ struct DEHMap: View {
                     }
                     else {
                         return ActionSheet(title: Text("Select Search XOIs"), message: Text(""), buttons: [
-                            .default(Text("POI".localized)) { searchXOIs(action: "searchNearbyPOI") },
-                            .default(Text("LOI".localized)) { searchXOIs(action: "searchNearbyLOI") },
-                            .default(Text("AOI".localized)) { searchXOIs(action: "searchNearbyAOI") },
-                            .default(Text("SOI".localized)) { searchXOIs(action: "searchNearbySOI") },
+                            .default(Text("附近POI".localized)) { searchXOIs(action: "searchNearbyPOI") },
+                            .default(Text("附近LOI".localized)) { searchXOIs(action: "searchNearbyLOI") },
+                            .default(Text("附近AOI".localized)) { searchXOIs(action: "searchNearbyAOI") },
+                            .default(Text("附近SOI".localized)) { searchXOIs(action: "searchNearbySOI") },
                             .cancel()
                         ])
                     }
@@ -166,6 +167,32 @@ extension DEHMap{
             showFilterButton = true
         }
     }
+    func searchGroupXOIs(action:String){
+        print("User icon pressed...")
+        print(locationManager.coordinateRegion.center.latitude)
+        let parameters:[String:String] = [
+            "username": "\(settingStorage.account)",
+            "lat" :"\(locationManager.coordinateRegion.center.latitude)",
+            "lng": "\(locationManager.coordinateRegion.center.longitude)",
+            "dis": "\(settingStorage.searchDistance * 1000)",
+            "num": "\(settingStorage.searchNumber)",
+            "coi_name": coi,
+            "action": action,
+            "user_id": "\(settingStorage.userID)",
+            "group_id":"\(group.id)",
+            "language":"中文"
+        ]
+        let url = getXois[action] ?? ""
+        let publisher:DataResponsePublisher<XOIList> = NetworkConnector().getDataPublisherDecodable(url: url, para: parameters)
+        self.cancellable = publisher
+            .sink(receiveValue: {(values) in
+                self.settingStorage.XOIs["group"] = values.value?.results
+                print(locationManager.coordinateRegion.center.latitude)
+                self.settingStorage.mapType = "group"
+            })
+        showFilterButton = true
+        
+    }
     @ViewBuilder func destinationSelector(xoi:XOI) -> some View{
         switch xoi.xoiCategory {
         case "poi": XOIDetail(xoi:xoi)
@@ -177,6 +204,8 @@ extension DEHMap{
         }
     }
 }
+
+
 struct pin:View{
     @EnvironmentObject var settingStorage:SettingStorage
     var xoi:XOI

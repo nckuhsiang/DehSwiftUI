@@ -105,7 +105,7 @@ struct ContentView: View {
                         TabViewElement(title: "My Favorite".localized, image1: "Empty", image2: "Empty",tabItemImage: "member_favorite",tabItemName: "favorite")
                         TabViewElement(title: "Searched Xois".localized, image1: "Empty", image2: "Empty",tabItemImage:"member_searched",tabItemName: "nearby")
                         if isLite() {
-                            TabViewElement(title: "Group Interests".localized, image1: "empty", image2: "search",tabItemImage:"member_group",tabItemName:"group", group: group)
+                            TabViewElement(title: "Group Interests".localized, image1: "Empty", image2: "search",tabItemImage:"member_group",tabItemName:"group", group: group)
                         }
                         if isMini() {
                             TabViewElement(title: "Group Interests".localized, image1: "member_grouplist", image2: "search",tabItemImage:"member_group",tabItemName:"group")
@@ -167,7 +167,7 @@ struct ContentView: View {
                             Image(systemName: "gamecontroller")
                         }
                     }
-                    NavigationLink(tag: 5, selection: $selection, destination: {DEHMap()}) {
+                    NavigationLink(tag: 5, selection: $selection, destination: {DEHMap(group:self.group)}) {
                         Button{
                             print("map tapped")
                             self.selection = 5

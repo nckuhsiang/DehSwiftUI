@@ -120,7 +120,16 @@ extension TabViewElement{
     }
     func actionSheetBuilder(tabItemName:String) -> ActionSheet{
         print(tabItemName)
-        if(tabItemName == "group"){
+        if(tabItemName == "group") && isLite(){
+            return ActionSheet(title: Text("Select Search XOIs"), message: Text(""), buttons: [
+                .default(Text("Group POI")) { searchXOIs(action: "searchGroupPOI") },
+                .default(Text("Group LOI")) { searchXOIs(action: "searchGroupLOI") },
+                .default(Text("Group AOI")) { searchXOIs(action: "searchGroupAOI") },
+                .default(Text("Group SOI")) { searchXOIs(action: "searchGroupSOI") },
+                .cancel()
+            ])
+        }
+        else if(tabItemName == "group") && !isLite(){
             return ActionSheet(title: Text("Select Search XOIs"), message: Text(""), buttons: [
                 .default(Text("Group POI")) { searchXOIs(action: "searchGroupPOI") },
                 .default(Text("Group LOI")) { searchXOIs(action: "searchGroupLOI") },
@@ -142,6 +151,12 @@ extension TabViewElement{
                 .cancel()
             ])
         }
+    }
+    func isLite() -> Bool{
+        if image1 == "Empty" && image2 == "search"{
+            return true
+        }
+            return false
     }
 }
 
