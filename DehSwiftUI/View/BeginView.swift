@@ -52,9 +52,9 @@ struct BeginView: View {
             .listStyle(PlainListStyle())
         }
         .onAppear { getGroupNameList() }
-        .alert(isPresented: $resAlertState) {
-            Alert(title:Text(alertText.localized), dismissButton: .default(Text("OK".localized), action: {self.groupSelectedOver = true}))
-        }
+//        .alert(isPresented: $resAlertState) {
+//            Alert(title:Text(alertText.localized), dismissButton: .default(Text("OK".localized), action: {self.groupSelectedOver = true}))
+//        }
     }
 }
 
@@ -70,23 +70,6 @@ extension BeginView {
                 print(values.debugDescription)
                 self.groupNameList = values.value?.result ?? []
             })
-    }
-    func GroupApplyMessage() {
-        let url = GroupMemberJoinUrl
-        let temp = """
-        {
-            "sender_name": "\(settingStorage.account)",
-            "group_name": "\(selectedGroup)"
-        }
-"""
-        let parameters = ["join_info":temp]
-        let publisher:DataResponsePublisher<GroupMessage> = NetworkConnector().getDataPublisherDecodable(url: url, para: parameters)
-        self.cancellable = publisher
-            .sink(receiveValue: {(values) in
-                print(values.debugDescription)
-                self.alertText = values.value?.message ?? ""
-            })
-        
     }
 }
 
